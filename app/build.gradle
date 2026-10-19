@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace 'com.example.p65020d'
+    namespace 'com.termux'
     compileSdk 36
 
     defaultConfig {

@@ -1,4 +1,4 @@
-package com.example.p65020d
+package com.termux
 
 import android.content.Context
 import android.os.Bundle
@@ -43,7 +43,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.p65020d.ui.theme.AppTheme
+import com.termux.ui.theme.AppTheme
 
 /** 用于代码块的高亮颜色 */
 private val CodeBlockBg = Color(0xFF1E1E2E)

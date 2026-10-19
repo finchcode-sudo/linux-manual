@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.p65020d">
+    package="com.termux">
 
     <!-- 仅保留网络权限，用于未来扩展在线指令查询 -->
     <uses-permission android:name="android.permission.INTERNET" />

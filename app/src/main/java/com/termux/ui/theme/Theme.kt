@@ -1,4 +1,4 @@
-package com.example.p65020d.ui.theme
+package com.termux.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

@@ -1,4 +1,4 @@
-package com.example.p65020d;
+package com.termux;
 
 import android.app.Application;
 import android.content.Context;

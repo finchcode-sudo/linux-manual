@@ -1,4 +1,4 @@
-package com.example.p65020d.ui.theme
+package com.termux.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
