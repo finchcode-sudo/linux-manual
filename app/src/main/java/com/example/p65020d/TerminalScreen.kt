@@ -38,14 +38,28 @@ object TerminalHost : TerminalViewClient, TerminalSessionClient {
     fun ensureSession(context: Context): TerminalSession {
         appContext = context.applicationContext
         session?.let { if (it.isRunning) return it }
-        val home = context.filesDir.absolutePath
-        val env = arrayOf(
-            "TERM=xterm-256color", "COLORTERM=truecolor", "HOME=$home", "TMPDIR=${context.cacheDir.absolutePath}",
-            "SHELL=/system/bin/sh", "LANG=en_US.UTF-8", "PREFIX=/system",
-            "PATH=/system/bin:/system/xbin:/vendor/bin", "ANDROID_ROOT=/system", "ANDROID_DATA=/data",
-            "EXTERNAL_STORAGE=/sdcard"
-        )
-        val s = TerminalSession("/system/bin/sh", home, arrayOf("sh"), env, 2000, this)
+        val prefixDir = Bootstrap.prefix(context)
+        val home = Bootstrap.home(context).absolutePath
+        val s: TerminalSession
+        if (Bootstrap.isInstalled(context)) {
+            val prefix = prefixDir.absolutePath
+            val env = ArrayList<String>()
+            for ((k, v) in System.getenv()) {
+                if (k.startsWith("ANDROID_") || k == "BOOTCLASSPATH" || k == "DEX2OATBOOTCLASSPATH" || k == "EXTERNAL_STORAGE") env.add("$k=$v")
+            }
+            env.addAll(listOf(
+                "TERM=xterm-256color", "COLORTERM=truecolor", "HOME=$home", "PREFIX=$prefix",
+                "TMPDIR=$prefix/tmp", "PATH=$prefix/bin:/system/bin:/system/xbin", "LANG=en_US.UTF-8",
+                "SHELL=$prefix/bin/bash", "TERMUX_VERSION=0.118.3"
+            ))
+            if (java.io.File(prefix, "lib/libtermux-exec.so").exists()) env.add("LD_PRELOAD=$prefix/lib/libtermux-exec.so")
+            s = TerminalSession("$prefix/bin/bash", home, arrayOf("-bash"), env.toTypedArray(), 2000, this)
+        } else {
+            val env = arrayOf(
+                "TERM=xterm-256color", "HOME=$home", "PATH=/system/bin:/system/xbin", "SHELL=/system/bin/sh"
+            )
+            s = TerminalSession("/system/bin/sh", home, arrayOf("sh"), env, 2000, this)
+        }
         session = s
         finished = false
         return s
@@ -116,6 +130,34 @@ object TerminalHost : TerminalViewClient, TerminalSessionClient {
 @Composable
 fun TerminalScreen(contentPadding: PaddingValues) {
     val context = LocalContext.current
+    val bsState = Bootstrap.state
+    val installed = bsState == Bootstrap.State.DONE || Bootstrap.isInstalled(context)
+    LaunchedEffect(bsState, installed) {
+        if (!installed && bsState == Bootstrap.State.IDLE) Bootstrap.startInstall(context)
+    }
+    if (!installed) {
+        Box(
+            modifier = Modifier.fillMaxSize().background(Color.Black).padding(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                if (Bootstrap.state == Bootstrap.State.ERROR) {
+                    Text("终端环境安装失败", color = Color.White, fontSize = 16.sp)
+                    Spacer(Modifier.height(8.dp))
+                    Text(Bootstrap.error, color = Color(0xFFFF8A80), fontSize = 11.sp)
+                    Spacer(Modifier.height(12.dp))
+                    Button(onClick = { Bootstrap.state = Bootstrap.State.IDLE }) { Text("重试") }
+                } else {
+                    CircularProgressIndicator()
+                    Spacer(Modifier.height(16.dp))
+                    Text("首次使用，正在安装终端环境…", color = Color.White, fontSize = 15.sp)
+                    Spacer(Modifier.height(4.dp))
+                    Text("已解压 ${Bootstrap.fileCount} 个文件", color = Color.Gray, fontSize = 12.sp)
+                }
+            }
+        }
+        return
+    }
     var restartKey by remember { mutableIntStateOf(0) }
 
     Column(

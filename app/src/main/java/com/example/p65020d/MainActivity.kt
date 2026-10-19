@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.p65020d.ui.theme.AppTheme
@@ -71,6 +72,7 @@ enum class BottomTab(val label: String, val icon: ImageVector) {
 
 sealed class Overlay {
     data object Search : Overlay()
+    data object Favorites : Overlay()
     data class CategoryDetail(val category: CmdCategory) : Overlay()
     data class CommandDetail(val command: LinuxCommand) : Overlay()
 }
@@ -129,6 +131,7 @@ fun LinuxManualApp() {
                             onInfoClick = { showAbout = true },
                             onSearchClick = { overlay = Overlay.Search },
                             onSeeAllCategories = { selectedTab = BottomTab.CATEGORIES },
+                            onFavoritesClick = { overlay = Overlay.Favorites },
                             favoriteNames = favoriteNames,
                             onToggleFavorite = onToggleFavorite,
                             onCommandClick = onCommandClick,
@@ -141,6 +144,12 @@ fun LinuxManualApp() {
                         BottomTab.FAVORITES -> TerminalScreen(innerPadding)
                     }
                 }
+                is Overlay.Favorites -> FavoritesScreen(
+                    favoriteNames = favoriteNames,
+                    onToggleFavorite = onToggleFavorite,
+                    onGoSearch = { overlay = Overlay.Search },
+                    onCommandClick = onCommandClick
+                )
                 is Overlay.Search -> SearchScreen(
                     favoriteNames = favoriteNames,
                     onToggleFavorite = onToggleFavorite,
@@ -252,6 +261,7 @@ fun HomeScreen(
     onInfoClick: () -> Unit,
     onSearchClick: () -> Unit,
     onSeeAllCategories: () -> Unit,
+    onFavoritesClick: () -> Unit = {},
     favoriteNames: List<String>,
     onToggleFavorite: (LinuxCommand) -> Unit,
     onCommandClick: (LinuxCommand) -> Unit,
@@ -294,6 +304,7 @@ fun HomeScreen(
             HeroCard(
                 favoriteCount = favoriteCount,
                 onSearchClick = onSearchClick,
+                onFavoritesClick = onFavoritesClick,
                 modifier = Modifier.padding(horizontal = 20.dp)
             )
         }
@@ -403,6 +414,7 @@ fun HomeScreen(
 fun HeroCard(
     favoriteCount: Int,
     onSearchClick: () -> Unit,
+    onFavoritesClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -487,7 +499,7 @@ fun HeroCard(
                     value = "$favoriteCount",
                     label = "我的收藏",
                     iconBg = Color(0xFFE91E63),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f).clip(RoundedCornerShape(16.dp)).clickable { onFavoritesClick() }
                 )
             }
         }
@@ -700,9 +712,7 @@ fun FavoritesScreen(
     onGoSearch: () -> Unit,
     onCommandClick: (LinuxCommand) -> Unit
 ) {
-    val favCommands = remember(favoriteNames) {
-        allLinuxCommands.filter { it.name in favoriteNames }
-    }
+    val favCommands = allLinuxCommands.filter { it.name in favoriteNames }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
