@@ -10,9 +10,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
 }
 rootProject.name = "LinuxManual"
 include(":app")
 include(":terminal-emulator")
 include(":terminal-view")
+include(":termux-shared")

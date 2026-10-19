@@ -12,12 +12,33 @@ android {
         applicationId "com.termux"
         minSdk 24
         targetSdk 28
-        versionCode 1
-        versionName "1.0"
+        versionCode 1002
+        versionName "0.118.3"
+
+        manifestPlaceholders = [
+            TERMUX_PACKAGE_NAME      : "com.termux",
+            TERMUX_APP_NAME          : "Termux",
+            TERMUX_API_APP_NAME      : "Termux:API",
+            TERMUX_BOOT_APP_NAME     : "Termux:Boot",
+            TERMUX_FLOAT_APP_NAME    : "Termux:Float",
+            TERMUX_STYLING_APP_NAME  : "Termux:Styling",
+            TERMUX_TASKER_APP_NAME   : "Termux:Tasker",
+            TERMUX_WIDGET_APP_NAME   : "Termux:Widget"
+        ]
+
+        ndk { abiFilters 'arm64-v8a' }
+        externalNativeBuild {
+            ndkBuild { cFlags "-std=c11", "-Wall", "-Os", "-fno-stack-protector" }
+        }
     }
 
-    androidResources {
-        noCompress 'zip'
+    ndkVersion '27.0.12077973'
+    externalNativeBuild {
+        ndkBuild { path "src/main/cpp/Android.mk" }
+    }
+
+    packaging {
+        jniLibs { useLegacyPackaging true }
     }
 
     buildFeatures {
@@ -55,7 +76,19 @@ dependencies {
     // 代码中用到 Icons.Filled.* 以及 Icons.AutoMirrored.Filled.*
     implementation 'androidx.compose.material:material-icons-core:1.6.0'
 
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.annotation:annotation:1.3.0'
+    implementation 'androidx.drawerlayout:drawerlayout:1.1.1'
+    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.viewpager:viewpager:1.0.0'
+    implementation 'com.google.guava:guava:24.1-jre'
+    implementation 'io.noties.markwon:core:4.6.2'
+    implementation 'io.noties.markwon:ext-strikethrough:4.6.2'
+    implementation 'io.noties.markwon:linkify:4.6.2'
+    implementation 'io.noties.markwon:recycler:4.6.2'
+
     implementation project(':terminal-view')
+    implementation project(':termux-shared')
 
     debugImplementation 'androidx.compose.ui:ui-tooling:1.7.6'
 }

@@ -6,7 +6,7 @@ import android.content.Intent;
 import java.io.File;
 import java.io.FileInputStream;
 
-public class CrashApp extends Application {
+public class CrashApp extends com.termux.app.TermuxApplication {
 
     // 运行批次号：IDE 编译时把当前 runId 烤进这一行。崩溃回流广播带上此值，
     // IDE 只接收当前 runId 的崩溃，旧进程残留发的崩溃广播会被拒收，避免旧堆栈污染新控制台。

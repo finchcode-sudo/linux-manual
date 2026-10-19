@@ -114,7 +114,13 @@ fun LinuxManualApp() {
         bottomBar = {
             val imeUp = WindowInsets.ime.getBottom(LocalDensity.current) > 0
             if (overlay == null && !imeUp) {
-                BottomNavBar(selected = selectedTab, onSelect = { selectedTab = it })
+                BottomNavBar(selected = selectedTab, onSelect = { tab ->
+                    if (tab == BottomTab.FAVORITES) {
+                        context.startActivity(android.content.Intent(context, com.termux.app.TermuxActivity::class.java))
+                    } else {
+                        selectedTab = tab
+                    }
+                })
             }
         }
     ) { innerPadding ->
@@ -141,7 +147,7 @@ fun LinuxManualApp() {
                         BottomTab.CATEGORIES -> CategoriesScreen(
                             onCategoryClick = { cat -> overlay = Overlay.CategoryDetail(cat) }
                         )
-                        BottomTab.FAVORITES -> TerminalScreen(innerPadding)
+                        BottomTab.FAVORITES -> Unit
                     }
                 }
                 is Overlay.Favorites -> FavoritesScreen(

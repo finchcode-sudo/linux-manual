@@ -8,4 +8,4 @@
 .externalNativeBuild/
 .cxx/
 app/build/
-app/src/main/assets/bootstrap-*.zip
+app/src/main/cpp/bootstrap-*.zip
