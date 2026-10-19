@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Linux 指令手册</string>
+    <string name="cmd_search_hint">搜索指令名称或描述…</string>
+    <string name="cmd_favorites">我的收藏</string>
+    <string name="cmd_no_favorites">还没有收藏的指令</string>
+    <string name="cmd_no_results">未找到匹配的指令</string>
+    <string name="cmd_syntax">语法</string>
+    <string name="cmd_examples">示例</string>
+    <string name="cmd_tips">提示</string>
+    <string name="cmd_all">全部</string>
+</resources>
